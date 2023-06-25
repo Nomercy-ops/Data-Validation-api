@@ -127,3 +127,8 @@ def show_error(request: Request, error_message: str):
 @router.on_event("shutdown")
 async def cleanup_temp_dir():
     temp_dir.cleanup()
+
+
+@router.get("/contact")
+def show_contact(request: Request):
+    return templates.TemplateResponse("contact.html", {"request": request})   

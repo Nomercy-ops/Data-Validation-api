@@ -63,12 +63,95 @@
             width: 48%;
             height: 400px;
         }
+
+        /* Header Styles */
+        nav {
+            margin-top: 10px; 
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            text-align: center;
+            padding: 20px 0;
+            margin-bottom: 20px;
+        }
+
+        nav h1 {
+            color: black;
+            font-size: 36px;
+            font-weight: bold;
+            margin: 0;
+            flex-grow: 1;
+        }
+
+        /* Navigation Styles */
+        nav ul {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        nav ul li {
+            margin-left: 10px;
+        }
+
+        nav ul li:first-child {
+            margin-left: 0;
+        }
+
+        nav ul li a {
+            text-decoration: none;
+            color: #333;
+            padding: 5px;
+            font-size: 24px;
+            font-weight: bold;
+            transition: color 0.3s ease;
+        }
+
+        nav ul li a:hover {
+            color: green;
+            animation: glowEffect 1s infinite alternate;
+        }
+
+        /* Footer Styles */
+        footer {
+            color: black;
+            text-align: center;
+            padding: 20px;
+            margin-top: 20px;
+        }
+
+        footer p {
+            font-size: 16px;
+            margin-bottom: 10px;
+        }
+
+        /* Animations */
+        @keyframes glowEffect {
+            0% {
+                text-shadow: 0 0 5px #333;
+            }
+
+            100% {
+                text-shadow: 0 0 10px #333;
+            }
+        }
     </style>
 </head>
 
 <body>
-    <div class="container">
+    <nav>
         <h1>Validation Results Dashboard</h1>
+        <ul>
+            <li><a href="#">Home</a></li>
+            <li><a href="/contact">Contact Me</a></li>
+        </ul>
+    </nav>
+    
+
+    <div class="container">
 
         <div class="charts-container">
             <div id="totalSourceRecordsChart" class="chart"></div>
@@ -82,6 +165,8 @@
             <div id="mismatchedDataBarChart" class="mismatched-data-bar-chart"></div>
         </div>
     </div>
+
+    <footer>© 2023 Rikesh Chhetri. All rights reserved.</footer>
 
     <script>
         const results = JSON.parse(`{{ results | tojson | safe }}`);
