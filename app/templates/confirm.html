@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Confirmation Page</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-color: #f0f0f0;
+        }
+
+        .card {
+            width: 400px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            transition: box-shadow 0.3s ease;
+            animation: slideIn 0.5s ease;
+        }
+
+        .card:hover {
+            box-shadow: 0 4px 8px rgba(230, 13, 201, 0.2);
+            transform: scale(1.02);
+        }
+
+        h1 {
+            margin-bottom: 20px;
+            color: #333;
+            text-align: center;
+        }
+
+        .error-message {
+            color: red;
+            font-weight: bold;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        .confirm-message {
+            color: green;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        .form-group {
+            margin-bottom: 10px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 5px;
+            color: #555;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 5px;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+            color: #555;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #4CAF50;
+        }
+
+        .form-submit {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .form-submit:hover {
+            background-color: #f1f90b;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h1>Confirmation</h1>
+
+        {% if error_message %}
+        <div class="error-message">{{ error_message }}</div>
+        {% endif %}
+
+        <div class="confirm-message">{{ confirm_message }}</div>
+
+        <form method="POST" action="/confirm" enctype="multipart/form-data">
+            <div class="form-group">
+                <label class="form-label">Columns to Remove (comma-separated)</label>
+                <input class="form-input" type="text" name="columns_to_remove" required>
+            </div>
+        
+            <div class="form-group">
+                <input type="hidden" name="source_csv" value="{{ source_csv.filename }}" accept=".csv">
+                <input type="hidden" name="target_csv" value="{{ target_csv.filename }}" accept=".csv">
+                <input type="file" name="source_csv_file" style="display: none;">
+                <input type="file" name="target_csv_file" style="display: none;">
+            </div>
+        
+            <div class="form-group">
+                <input class="form-submit" type="submit" value="Confirm and Proceed">
+            </div>
+        </form>
+    </div>
+    <script>
+        // Trigger file input click when hidden input is clicked
+        document.querySelector('input[name="source_csv"]').addEventListener('click', function() {
+            document.querySelector('input[name="source_csv_file"]').click();
+        });
+
+        document.querySelector('input[name="target_csv"]').addEventListener('click', function() {
+            document.querySelector('input[name="target_csv_file"]').click();
+        });
+    </script>
+</body>
+</html>

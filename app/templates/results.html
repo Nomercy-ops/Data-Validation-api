@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Validation Results Dashboard</title>
+    <script src="https://code.highcharts.com/highcharts.js"></script>
+    <script src="https://code.highcharts.com/modules/accessibility.js"></script>
+
+    <style>
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .charts-container {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+        }
+
+        .chart {
+            width: 48%;
+            margin-bottom: 20px;
+        }
+
+        .mismatched-data-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-top: 20px;
+        }
+
+        .mismatched-data-chart {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            font-family: Arial, sans-serif;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .mismatched-data-chart table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        .mismatched-data-chart th,
+        .mismatched-data-chart td {
+            padding: 8px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .mismatched-data-chart th {
+            background-color: #f2f2f2;
+            font-weight: bold;
+        }
+
+        .mismatched-data-bar-chart {
+            width: 48%;
+            height: 400px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Validation Results Dashboard</h1>
+
+        <div class="charts-container">
+            <div id="totalSourceRecordsChart" class="chart"></div>
+            <div id="totalTargetRecordsChart" class="chart"></div>
+            <div id="mismatchedColumnsChart" class="chart"></div>
+        </div>
+
+        <h3>Mismatched Data (First 10 Records)</h3>
+        <div class="mismatched-data-container">
+            <div id="mismatchedDataChart" class="mismatched-data-chart"></div>
+            <div id="mismatchedDataBarChart" class="mismatched-data-bar-chart"></div>
+        </div>
+    </div>
+
+    <script>
+        const results = JSON.parse(`{{ results | tojson | safe }}`);
+
+        // Chart for total source records
+        Highcharts.chart('totalSourceRecordsChart', {
+            chart: {
+                type: 'pie'
+            },
+            title: {
+                text: 'Total Source Records'
+            },
+            series: [{
+                name: 'Records',
+                data: [
+                    { name: 'Total Source Records', y: results.total_source_records, color: '#ff0000' }
+                ],
+                dataLabels: {
+                    enabled: true,
+                    format: '{point.name}: {point.y}',
+                    distance: -30,
+                    style: {
+                        fontWeight: 'bold',
+                        color: 'white',
+                        textOutline: '1px 1px contrast'
+                    }
+                }
+            }]
+        });
+
+        // Chart for total target records
+        Highcharts.chart('totalTargetRecordsChart', {
+            chart: {
+                type: 'pie'
+            },
+            title: {
+                text: 'Total Target Records'
+            },
+            series: [{
+                name: 'Records',
+                data: [
+                    { name: 'Total Target Records', y: results.total_target_records, color: '#ff0000' }
+                ],
+                dataLabels: {
+                    enabled: true,
+                    format: '{point.name}: {point.y}',
+                    distance: -30,
+                    style: {
+                        fontWeight: 'bold',
+                        color: 'white',
+                        textOutline: '1px 1px contrast'
+                    }
+                }
+            }]
+        });
+
+        // Chart for mismatched columns
+        Highcharts.chart('mismatchedColumnsChart', {
+            chart: {
+                type: 'column'
+            },
+            title: {
+                text: 'Mismatched Columns'
+            },
+            xAxis: {
+                categories: [results.mismatched_columns]
+            },
+            yAxis: {
+                min: 0,
+                title: {
+                    text: 'Count'
+                }
+            },
+            series: [{
+                name: 'Mismatched Columns',
+                data: results.mismatched_columns ? [results.mismatched_columns.length] : [0],
+                color: '#ff0000'
+            }]
+        });
+
+        // Render mismatched data as a table
+        const mismatchedDataTable = document.createElement('table');
+        const mismatchedDataContainer = document.getElementById('mismatchedDataChart');
+        if (results.mismatched_data && results.mismatched_data.length > 0) {
+            const columns = Object.keys(results.mismatched_data[0]);
+
+            // Create table headers
+            const tableHeader = document.createElement('tr');
+            columns.forEach(column => {
+                const th = document.createElement('th');
+                th.textContent = column;
+                tableHeader.appendChild(th);
+            });
+            mismatchedDataTable.appendChild(tableHeader);
+
+            // Create table rows
+            results.mismatched_data.slice(0, 10).forEach(record => {
+                const tableRow = document.createElement('tr');
+                columns.forEach(column => {
+                    const td = document.createElement('td');
+                    td.textContent = record[column];
+                    tableRow.appendChild(td);
+                });
+                mismatchedDataTable.appendChild(tableRow);
+            });
+        } else {
+            const noDataMessage = document.createElement('p');
+            noDataMessage.textContent = 'No mismatched data available.';
+            mismatchedDataContainer.appendChild(noDataMessage);
+        }
+
+        mismatchedDataContainer.appendChild(mismatchedDataTable);
+
+        // Chart for mismatched data
+        Highcharts.chart('mismatchedDataBarChart', {
+            chart: {
+                type: 'bar'
+            },
+            title: {
+                text: 'Mismatched Data'
+            },
+            xAxis: {
+                categories: ['Mismatched Data']
+            },
+            yAxis: {
+                min: 0,
+                title: {
+                    text: 'Count'
+                }
+            },
+            series: [{
+                name: 'Mismatched Data',
+                data: results.mismatched_data ? [results.mismatched_data.length] : [0],
+                color: '#ff0000'
+            }]
+        });
+    </script>
+</body>
+
+</html>

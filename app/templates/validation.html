@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Validation</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="container">
+        <div class="form-container">
+            <h1>Data Validation</h1>
+            <form id="validation-form" action="/validate" method="post">
+                <div class="form-group">
+                    <label for="source">Source:</label>
+                    <select name="source" id="source" class="form-select">
+                        <option value="">Select Source</option>
+                        <option value="csv">CSV File</option>
+                        <option value="database">Database</option>
+                    </select>
+                </div>
+                <div class="form-group" id="csv-fields" style="display: none;">
+                    <label for="csv_file">CSV File:</label>
+                    <input type="file" id="csv-file" name="source_csv" accept=".csv">
+                </div>
+                <div class="form-group" id="database-fields" style="display: none;">
+                    <label for="database_host">Database Host:</label>
+                    <input type="text" name="database_host" id="database-host" class="form-control" placeholder="Enter database host">
+                    <label for="database_name">Database Name:</label>
+                    <input type="text" name="database_name" id="database-name" class="form-control" placeholder="Enter database name">
+                    <label for="database_username">Username:</label>
+                    <input type="text" name="database_username" id="database-username" class="form-control" placeholder="Enter username">
+                    <label for="database_password">Password:</label>
+                    <input type="password" name="database_password" id="database-password" class="form-control" placeholder="Enter password">
+                </div>
+                <div class="form-group">
+                    <label for="target">Target:</label>
+                    <select name="target" id="target" class="form-select">
+                        <option value="">Select Target</option>
+                        <option value="csv">CSV File</option>
+                        <option value="database">Database</option>
+                    </select>
+                </div>
+                <div class="form-group" id="target-csv-fields" style="display: none;">
+                    <label for="target_csv_file">Target CSV File:</label>
+                    <input type="file" id="target-csv-file" name="target_csv" accept=".csv">
+                </div>
+                <div class="form-group" id="target-database-fields" style="display: none;">
+                    <label for="target_database_host">Target Database Host:</label>
+                    <input type="text" name="target_database_host" id="target-database-host" class="form-control" placeholder="Enter target database host">
+                    <label for="target_database_name">Target Database Name:</label>
+                    <input type="text" name="target_database_name" id="target-database-name" class="form-control" placeholder="Enter target database name">
+                    <label for="target_database_username">Username:</label>
+                    <input type="text" name="target_database_username" id="target-database-username" class="form-control" placeholder="Enter username">
+                    <label for="target_database_password">Password:</label>
+                    <input type="password" name="target_database_password" id="target-database-password" class="form-control" placeholder="Enter password">
+                </div>
+                <div class="button-group">
+                    <button id="start-validation-button" class="btn-primary">Start Validation</button>
+                    <button id="reset-button" class="btn-btn-danger">Reset</button>
+                </div>
+            </form> <!-- Added the closing form tag -->
+        </div>
+    </div>
+    <footer>© 2023 Rikesh Chhetri. All rights reserved.</footer>
+    <script src="/static/script.js"></script>
+</body>
+</html>
