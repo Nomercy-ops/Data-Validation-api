@@ -145,7 +145,7 @@
     <nav>
         <h1>Validation Results Dashboard</h1>
         <ul>
-            <li><a href="#">Home</a></li>
+            <li><a href="/">Home</a></li>
             <li><a href="/contact">Contact Me</a></li>
         </ul>
     </nav>
@@ -242,7 +242,7 @@
             },
             series: [{
                 name: 'Mismatched Columns',
-                data: results.mismatched_columns ? [results.mismatched_columns.length] : [0],
+                data: results.mismatched_columns ?(results.mismatched_columns.length >= 1 ? [results.mismatched_columns.filter(value => value !== "Na").length] : [0]) : [0],
                 color: '#ff0000'
             }]
         });

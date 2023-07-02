@@ -1,75 +1,130 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Data Validation</title>
     <link rel="stylesheet" href="/static/style.css">
 </head>
+
 <body>
     <nav>
-        <h1>Data Validation</h1>
+        <h1>Future Tool</h1>
         <ul>
             <li><a href="#">Home</a></li>
             <li><a href="/contact">Contact Me</a></li>
         </ul>
     </nav>
     <div class="container">
-        <div class="form-container">
-            <!-- <h1>Data Validation</h1> -->
-            <form id="validation-form" action="/validate" method="post">
-                <div class="form-group">
-                    <label for="source">Source:</label>
-                    <select name="source" id="source" class="form-select">
-                        <option value="">Select Source</option>
-                        <option value="csv">CSV File</option>
-                        <option value="database">Database</option>
-                    </select>
+        <h1>Data Validation Tool</h1>
+        <form id="validation-form" action="" method="post">
+            <div class="card-container">
+                <div class="card">
+                    <h2>Source</h2>
+                    <div class="form-group">
+                        <label for="source">Source:</label>
+                        <select name="source" id="source" class="form-select">
+                            <option value="">Select Source</option>
+                            <option value="csv">CSV File</option>
+                            <option value="database">Database</option>
+                        </select>
+                    </div>
+                    <div class="form-group" id="source-csv-fields" style="display: none;">
+                        <label for="source_csv-file">CSV File:</label>
+                        <input type="file" id="source-csv-file" name="source_csv" accept=".csv">
+                    </div>
+                    <div class="form-group" id="source-database-fields" style="display: none;">
+                        <label for="source_database_host">Source Database Host:</label>
+                        <input type="text" name="source_database_host" id="source-database-host" class="form-control"
+                            placeholder="Enter source database host">
+                        <label for="source_database_name">Source Database Name:</label>
+                        <input type="text" name="source_database_name" id="source-database-name" class="form-control"
+                            placeholder="Enter source database name">
+                        <label for="source_database_username">Username:</label>
+                        <input type="text" name="source_database_username" id="source-database-username"
+                            class="form-control" placeholder="Enter username">
+                        <label for="source_database_password">Password:</label>
+                        <input type="password" name="source_database_password" id="source-database-password"
+                            class="form-control" placeholder="Enter password">
+                        <label for="source_database_type">Source Database Type:</label><br>
+                        <input type="radio" name="source_database_type" id="source-database-type-sql" value="sql"
+                            checked>
+                        <label for="source-database-type-sql">SQL</label><br>
+                        <input type="radio" name="source_database_type" id="source-database-type-snowflake"
+                            value="snowflake">
+                        <label for="source-database-type-snowflake">Snowflake</label><br>
+                        <input type="radio" name="source_database_type" id="source-database-type-postgres"
+                            value="postgres">
+                        <label for="source-database-type-postgres">PostgreSQL</label><br>
+                        <input type="radio" name="source_database_type" id="source-database-type-mysql" value="mysql">
+                        <label for="source-database-type-mysql">MySQL</label><br>
+                    </div>
                 </div>
-                <div class="form-group" id="csv-fields" style="display: none;">
-                    <label for="csv_file">CSV File:</label>
-                    <input type="file" id="csv-file" name="source_csv" accept=".csv">
+
+                <div class="card">
+                    <h2>Target</h2>
+                    <div class="form-group">
+                        <label for="target">Target:</label>
+                        <select name="target" id="target" class="form-select">
+                            <option value="">Select Target</option>
+                            <option value="csv">CSV File</option>
+                            <option value="database">Database</option>
+                        </select>
+                    </div>
+                    <div class="form-group" id="target-csv-fields" style="display: none;">
+                        <label for="target_csv-file">Target CSV File:</label>
+                        <input type="file" id="target-csv-file" name="target_csv" accept=".csv">
+                    </div>
+                    <div class="form-group" id="target-database-fields" style="display: none;">
+                        <label for="target_database_host">Target Database Host:</label>
+                        <input type="text" name="target_database_host" id="target-database-host" class="form-control"
+                            placeholder="Enter target database host">
+                        <label for="target_database_name">Target Database Name:</label>
+                        <input type="text" name="target_database_name" id="target-database-name" class="form-control"
+                            placeholder="Enter target database name">
+                        <label for="target_database_username">Username:</label>
+                        <input type="text" name="target_database_username" id="target-database-username"
+                            class="form-control" placeholder="Enter username">
+                        <label for="target_database_password">Password:</label>
+                        <input type="password" name="target_database_password" id="target-database-password"
+                            class="form-control" placeholder="Enter password">
+                        <label for="target_database_type">Target Database Type:</label><br>
+                        <input type="radio" name="target_database_type" id="target-database-type-sql" value="sql"
+                            checked>
+                        <label for="target-database-type-sql">SQL</label><br>
+                        <input type="radio" name="target_database_type" id="target-database-type-snowflake"
+                            value="snowflake">
+                        <label for="target-database-type-snowflake">Snowflake</label><br>
+                        <input type="radio" name="target_database_type" id="target-database-type-postgres"
+                            value="postgres">
+                        <label for="target-database-type-postgres">PostgreSQL</label><br>
+                        <input type="radio" name="target_database_type" id="target-database-type-mysql" value="mysql">
+                        <label for="target-database-type-mysql">MySQL</label><br>
+                        <!-- Add more radio buttons for other database types if needed -->
+                    </div>
                 </div>
-                <div class="form-group" id="database-fields" style="display: none;">
-                    <label for="database_host">Database Host:</label>
-                    <input type="text" name="database_host" id="database-host" class="form-control" placeholder="Enter database host">
-                    <label for="database_name">Database Name:</label>
-                    <input type="text" name="database_name" id="database-name" class="form-control" placeholder="Enter database name">
-                    <label for="database_username">Username:</label>
-                    <input type="text" name="database_username" id="database-username" class="form-control" placeholder="Enter username">
-                    <label for="database_password">Password:</label>
-                    <input type="password" name="database_password" id="database-password" class="form-control" placeholder="Enter password">
+            </div>
+
+            <div class="button-group">
+                <button id="start-validation-button" class="btn-primary">Start Validation</button>
+                <button type="reset" id="reset-button" class="btn-btn-danger">Reset</button>
+            </div>
+
+            <div id="progress-bar-container" style="display: none;">
+                <div class="progress-bar">
+                    <span class="progress"></span>
+                    <span class="progress-text"></span>
                 </div>
-                <div class="form-group">
-                    <label for="target">Target:</label>
-                    <select name="target" id="target" class="form-select">
-                        <option value="">Select Target</option>
-                        <option value="csv">CSV File</option>
-                        <option value="database">Database</option>
-                    </select>
-                </div>
-                <div class="form-group" id="target-csv-fields" style="display: none;">
-                    <label for="target_csv_file">Target CSV File:</label>
-                    <input type="file" id="target-csv-file" name="target_csv" accept=".csv">
-                </div>
-                <div class="form-group" id="target-database-fields" style="display: none;">
-                    <label for="target_database_host">Target Database Host:</label>
-                    <input type="text" name="target_database_host" id="target-database-host" class="form-control" placeholder="Enter target database host">
-                    <label for="target_database_name">Target Database Name:</label>
-                    <input type="text" name="target_database_name" id="target-database-name" class="form-control" placeholder="Enter target database name">
-                    <label for="target_database_username">Username:</label>
-                    <input type="text" name="target_database_username" id="target-database-username" class="form-control" placeholder="Enter username">
-                    <label for="target_database_password">Password:</label>
-                    <input type="password" name="target_database_password" id="target-database-password" class="form-control" placeholder="Enter password">
-                </div>
-                <div class="button-group">
-                    <button id="start-validation-button" class="btn-primary">Start Validation</button>
-                    <button id="reset-button" class="btn-btn-danger">Reset</button>
-                </div>
-            </form> <!-- Added the closing form tag -->
-        </div>
+            </div>
+        </form>
     </div>
-    <footer>© 2023 Rikesh Chhetri. All rights reserved.</footer>
+
+    <footer>
+        <p>&copy; {{ footer_data }}. All rights reserved.</p>
+    </footer>
+
     <script src="/static/script.js"></script>
 </body>
+
 </html>
