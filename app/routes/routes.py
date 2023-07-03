@@ -213,11 +213,10 @@ async def validate_data(
 
 
 @router.post("/validate/database")
-def validate_database_data(request: Request,
-                           source: str = Form(...),
-                           target: str = Form(...),
-                           source_db: str = Form(None),
-                           target_db: str = Form(None)):
+async def validate_database_data(request: Request,
+                                source: str = Form(...),
+                                target: str = Form(...),
+                                data: str = Form(...)):
     """
     Validate and process database data received from a POST request.
 
@@ -225,22 +224,19 @@ def validate_database_data(request: Request,
         request (Request): The incoming request object.
         source (str): The source of the data.
         target (str): The target of the data.
-        source_db (Optional[str]): The source database data (default: None).
-        target_db (Optional[str]): The target database data (default: None).
+        source_db (dict): The source database data.
+        target_db (dict): The target database data.
 
     Returns:
         JSONResponse: The response containing a success message if data was received and processed successfully.
     """
 
-    if source == "database" and target == "database":
-        source_db_data = json.loads(source_db)
-        target_db_data = json.loads(target_db)
-        print(source_db_data)
-        print(target_db_data)
+    # Process the received data
+    print(data)
+    print(source)
+    
 
-        # Access the individual fields in source_db_data and target_db_data as needed
-
-        return JSONResponse(content={'message': 'Data received and processed successfully'})
+    return JSONResponse(content={'message': 'Data received and processed successfully'})
 
 
 @router.post("/confirm")

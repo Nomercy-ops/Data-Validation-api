@@ -114,8 +114,8 @@ function initializeValidationForm() {
       form.enctype = 'application/json';
   
       const formData = {
-        'source': selectedDataSource,
-        'target': selectedTarget,
+        // 'source': selectedDataSource,
+        // 'target': selectedTarget,
         'source_db': {
           host: document.getElementById('source-database-host').value,
           name: document.getElementById('source-database-name').value,
@@ -178,6 +178,7 @@ function initializeValidationForm() {
 
 
   function submitForm(form) {
+    console.log(form)
     const formContainer = document.createElement('div');
     formContainer.hidden = true;
     formContainer.style.display = 'none';
