@@ -91,6 +91,12 @@ function initializeValidationForm() {
     return host !== '' && name !== '' && username !== '' && password !== '';
   }
 
+function getSelectedValue(id) {
+  const radioButtons = Array.from(document.getElementsByName(id));
+  const selectedRadioButton = radioButtons.find(button => button.checked);
+  return selectedRadioButton ? selectedRadioButton.value : "";
+}
+
 
   function createForm(selectedDataSource, selectedTarget) {
     const form = document.createElement('form');
@@ -117,19 +123,21 @@ function initializeValidationForm() {
         // 'source': selectedDataSource,
         // 'target': selectedTarget,
         'source_db': {
-          host: document.getElementById('source-database-host').value,
-          name: document.getElementById('source-database-name').value,
-          username: document.getElementById('source-database-username').value,
-          password: document.getElementById('source-database-password').value
+          'host': document.getElementById('source-database-host').value,
+          'database-name': document.getElementById('source-database-name').value,
+          'username': document.getElementById('source-database-username').value,
+          'password': document.getElementById('source-database-password').value,
+          'source-database-type':getSelectedValue('source_database_type')
         }
       };
   
       if (selectedTarget === 'database') {
         formData['target_db'] = {
-          host: document.getElementById('target-database-host').value,
-          name: document.getElementById('target-database-name').value,
-          username: document.getElementById('target-database-username').value,
-          password: document.getElementById('target-database-password').value
+          'host': document.getElementById('target-database-host').value,
+          'database-name': document.getElementById('target-database-name').value,
+          'username': document.getElementById('target-database-username').value,
+          'password': document.getElementById('target-database-password').value,
+          'target-database-type':getSelectedValue('target_database_type')
         };
       }
   

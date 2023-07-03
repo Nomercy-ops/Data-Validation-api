@@ -127,7 +127,7 @@ from fastapi import UploadFile, File, Form, Body
 import dask.dataframe as dd
 from fastapi.templating import Jinja2Templates
 from app.validate import calculate_validation_results
-from typing import Dict, Optional
+from app.DatabaseHandling import process_database_data
 from datetime import datetime
 from fastapi.responses import JSONResponse
 import json
@@ -224,19 +224,23 @@ async def validate_database_data(request: Request,
         request (Request): The incoming request object.
         source (str): The source of the data.
         target (str): The target of the data.
-        source_db (dict): The source database data.
-        target_db (dict): The target database data.
+        data (str): The data containing the credentials in JSON format.
 
     Returns:
-        JSONResponse: The response containing a success message if data was received and processed successfully.
+        JSONResponse: The response containing a success message if data was received and processed successfully,
+                      or an error message if an exception occurred.
     """
 
-    # Process the received data
-    print(data)
-    print(source)
+    try:
+        # Process the received data
+        if source == "database" and target == "database":
+            res = process_database_data(data)
+            return show_results(request, res)
     
+    except Exception as e:
+        error_message = f"Error processing database data: {str(e)}"
+        return JSONResponse(content={'error': error_message}, status_code=500)
 
-    return JSONResponse(content={'message': 'Data received and processed successfully'})
 
 
 @router.post("/confirm")

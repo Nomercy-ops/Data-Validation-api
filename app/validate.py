@@ -62,6 +62,66 @@ def handle_missing_values(data):
 
 
 
+# def calculate_validation_results(source_data, target_data, col_to_remove="Na"):
+#     """
+#     Calculate the validation results between source and target data using Dask.
+
+#     Args:
+#         source_data (dask.dataframe.DataFrame): Dask DataFrame representing the source data.
+#         target_data (dask.dataframe.DataFrame): Dask DataFrame representing the target data.
+#         col_to_remove (str): Column to remove.
+
+#     Returns:
+#         dict: Dictionary containing validation results.
+#     """
+#     mismatched_columns = []
+#     mismatched_data = []
+
+#     # Find mismatched columns
+#     mismatched_columns.append(col_to_remove)
+
+#     source_data = handle_missing_values(source_data)
+#     target_data = handle_missing_values(target_data)
+
+
+#     try:
+#         # Set up a local Dask cluster
+#         with LocalCluster() as cluster, Client(cluster) as client:
+#             # Merge and iterate over rows of both DataFrames simultaneously
+#             merged_data = dd.merge(
+#                 source_data.reset_index(drop=True),
+#                 target_data.reset_index(drop=True),
+#                 left_index=True,
+#                 right_index=True,
+#                 suffixes=('_source', '_target')
+#             )
+#             for _, row in merged_data.iterrows():
+#                 source_values = row[[
+#                     col + '_source' for col in source_data.columns]].values
+#                 target_values = row[[
+#                     col + '_target' for col in target_data.columns]].values
+
+#                 # Exclude columns with non-matching values from the comparison
+#                 if not all(source_values == target_values):
+#                     mismatched_data.append(
+#                         {k: v for k, v in zip(
+#                             source_data.columns, source_values) if k != 'index'}
+#                     )
+
+#         # Calculate other metrics
+#         total_source_records = len(source_data)
+#         total_target_records = len(target_data)
+
+#         return {
+#             "total_source_records": total_source_records,
+#             "total_target_records": total_target_records,
+#             "mismatched_columns": mismatched_columns,
+#             "mismatched_data": mismatched_data[:10],
+#         }
+#     except Exception as e:
+#         # Handle the exception appropriately
+#         raise Exception("Error occurred during validation: " + str(e))
+
 def calculate_validation_results(source_data, target_data, col_to_remove="Na"):
     """
     Calculate the validation results between source and target data using Dask.
@@ -83,30 +143,28 @@ def calculate_validation_results(source_data, target_data, col_to_remove="Na"):
     source_data = handle_missing_values(source_data)
     target_data = handle_missing_values(target_data)
 
-
     try:
-        # Set up a local Dask cluster
-        with LocalCluster() as cluster, Client(cluster) as client:
-            # Merge and iterate over rows of both DataFrames simultaneously
-            merged_data = dd.merge(
-                source_data.reset_index(drop=True),
-                target_data.reset_index(drop=True),
-                left_index=True,
-                right_index=True,
-                suffixes=('_source', '_target')
-            )
-            for _, row in merged_data.iterrows():
-                source_values = row[[
-                    col + '_source' for col in source_data.columns]].values
-                target_values = row[[
-                    col + '_target' for col in target_data.columns]].values
+        # Merge the DataFrames and compute the result
+        merged_data = dd.merge(
+            source_data.reset_index(drop=True),
+            target_data.reset_index(drop=True),
+            left_index=True,
+            right_index=True,
+            suffixes=('_source', '_target')
+        ).compute()
 
-                # Exclude columns with non-matching values from the comparison
-                if not all(source_values == target_values):
-                    mismatched_data.append(
-                        {k: v for k, v in zip(
-                            source_data.columns, source_values) if k != 'index'}
-                    )
+        for _, row in merged_data.iterrows():
+            source_values = row[[
+                col + '_source' for col in source_data.columns]].values
+            target_values = row[[
+                col + '_target' for col in target_data.columns]].values
+
+            # Exclude columns with non-matching values from the comparison
+            if not all(source_values == target_values):
+                mismatched_data.append(
+                    {k: v for k, v in zip(
+                        source_data.columns, source_values) if k != 'index'}
+                )
 
         # Calculate other metrics
         total_source_records = len(source_data)
