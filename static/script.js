@@ -2,8 +2,6 @@ function initializeValidationForm() {
   const elements = cacheDOMElements();
   addEventListeners(elements);
 
-
-
   function cacheDOMElements() {
     // Cache DOM elements
     const elements = {
@@ -16,7 +14,6 @@ function initializeValidationForm() {
       sourceDbFieldsElement: document.getElementById('source-database-fields'),
       targetCsvFieldsElement: document.getElementById('target-csv-fields'),
       targetDbFieldsElement: document.getElementById('target-database-fields'),
-
     };
 
     return elements;
@@ -26,7 +23,7 @@ function initializeValidationForm() {
     const ids = {
       startValidationButton: 'start-validation-button',
       resetButton: 'reset-button',
-      validationForm: 'validation-form'
+      validationForm: 'validation-form',
     };
 
     const element = Object.keys(ids).reduce((acc, key) => {
@@ -39,8 +36,7 @@ function initializeValidationForm() {
     element.validationForm.addEventListener('change', handleSourceTargetChange);
   }
 
-
-  function handleValidation(event) {
+  function handleValidation(event, elements) {
     event.preventDefault(); // Prevent form submission
 
     const selectedDataSource = elements.sourceElement.value;
@@ -79,7 +75,7 @@ function initializeValidationForm() {
 
     const form = createForm(selectedDataSource, selectedTarget);
     document.body.appendChild(form);
-    submitForm(form);
+    submitForm(form, elements);
   }
 
   function isDatabaseDetailsProvided(type) {
@@ -91,71 +87,63 @@ function initializeValidationForm() {
     return host !== '' && name !== '' && username !== '' && password !== '';
   }
 
-function getSelectedValue(id) {
-  const radioButtons = Array.from(document.getElementsByName(id));
-  const selectedRadioButton = radioButtons.find(button => button.checked);
-  return selectedRadioButton ? selectedRadioButton.value : "";
-}
-
+  function getSelectedValue(id) {
+    const radioButtons = Array.from(document.getElementsByName(id));
+    const selectedRadioButton = radioButtons.find((button) => button.checked);
+    return selectedRadioButton ? selectedRadioButton.value : '';
+  }
 
   function createForm(selectedDataSource, selectedTarget) {
     const form = document.createElement('form');
     form.action = getValidationEndpoint(selectedDataSource, selectedTarget);
     form.method = 'POST';
-  
+
     if (selectedDataSource === 'csv') {
       form.enctype = 'multipart/form-data';
-  
+
       form.appendChild(createHiddenInput('source', selectedDataSource));
       form.appendChild(createHiddenInput('target', selectedTarget));
-  
+
       const sourceFileInput = createFileInput('source_csv', document.getElementById('source-csv-file').files);
       form.appendChild(sourceFileInput);
-  
+
       if (selectedTarget === 'csv') {
         const targetFileInput = createFileInput('target_csv', document.getElementById('target-csv-file').files);
         form.appendChild(targetFileInput);
       }
     } else if (selectedDataSource === 'database') {
       form.enctype = 'application/json';
-  
+
       const formData = {
-        // 'source': selectedDataSource,
-        // 'target': selectedTarget,
         'source_db': {
           'host': document.getElementById('source-database-host').value,
           'database-name': document.getElementById('source-database-name').value,
           'username': document.getElementById('source-database-username').value,
           'password': document.getElementById('source-database-password').value,
-          'source-database-type':getSelectedValue('source_database_type')
-        }
+          'source-database-type': getSelectedValue('source_database_type'),
+        },
       };
-  
+
       if (selectedTarget === 'database') {
         formData['target_db'] = {
           'host': document.getElementById('target-database-host').value,
           'database-name': document.getElementById('target-database-name').value,
           'username': document.getElementById('target-database-username').value,
           'password': document.getElementById('target-database-password').value,
-          'target-database-type':getSelectedValue('target_database_type')
+          'target-database-type': getSelectedValue('target_database_type'),
         };
       }
-  
+
       const jsonData = JSON.stringify(formData);
-      console.log(jsonData);
       const jsonInput = createHiddenInput('data', jsonData);
       form.appendChild(jsonInput);
-  
-      // Add hidden input elements for source and target
+
       form.appendChild(createHiddenInput('source', selectedDataSource));
       form.appendChild(createHiddenInput('target', selectedTarget));
     }
-  
+
     return form;
   }
-  
-  
-
 
   function getValidationEndpoint(selectedSource, selectedTarget) {
     const endpoints = {
@@ -183,42 +171,43 @@ function getSelectedValue(id) {
     }
     return input;
   }
-
+  
 
   function submitForm(form) {
-    console.log(form)
     const formContainer = document.createElement('div');
-    formContainer.hidden = true;
-    formContainer.style.display = 'none';
-    formContainer.appendChild(form);
-    document.body.appendChild(formContainer);
-
+      formContainer.hidden = true;
+      formContainer.style.display = 'none';
+      formContainer.appendChild(form);
+      document.body.appendChild(formContainer);
     const startValidationButton = document.getElementById('start-validation-button');
     const progressBarContainer = document.getElementById('progress-bar-container');
     const progressBar = document.querySelector('.progress-bar .progress');
-
+  
     startValidationButton.style.display = 'none';
     progressBarContainer.style.display = 'block';
-
-    let progress = 0;
-    const interval = setInterval(() => {
-      progress += 10;
+  
+    const socket = new WebSocket('ws://localhost:8000/ws/progress');
+  
+    socket.onopen = () => {
+      console.log('WebSocket connection established');
+  
+      // Move form submission inside the onopen event handler
+      form.submit();
+    };
+  
+    socket.onmessage = (event) => {
+      const data = JSON.parse(event.data);
+      const progress = data.progress;
+      console.log(progress)
       progressBar.style.width = progress + '%';
-      progressBar.textContent = progress + '%';
-
-      if (progress >= 100) {
-        clearInterval(interval);
-        setTimeout(() => {
-          console.log('Submitting form for validation...');
-          form.submit();
-          document.body.removeChild(formContainer);
-        }, 1500);
-      }
-    }, 100);
+    };
+  
+    socket.onclose = () => {
+      console.log('WebSocket connection closed');
+    };
   }
-
-
-
+  
+  
 
   function handleReset() {
     elements.sourceElement.value = '';
@@ -241,7 +230,7 @@ function getSelectedValue(id) {
     }
   }
 
-  function handleFileFields(selectedValue, fileType) {
+    function handleFileFields(selectedValue, fileType) {
     const fileFields = ['csv'];
     const databaseFields = ['database'];
 
@@ -260,8 +249,12 @@ function getSelectedValue(id) {
     }
   }
 
-
-
+  function getSelectedValue(id) {
+    const radioButtons = Array.from(document.getElementsByName(id));
+    const selectedRadioButton = radioButtons.find((button) => button.checked);
+    return selectedRadioButton ? selectedRadioButton.value : '';
+  }
 }
+
 // Call the initialization function
 initializeValidationForm();

@@ -136,31 +136,3 @@ def process_database_data(data):
         raise ConnectionError(f"Error connecting to the database: {str(e)}") from e
     except Exception as e:
         raise Exception(f"Error processing database data: {str(e)}") from e
-
-
-
-
-
-
-
-# # Example usage
-# data = '''
-# {
-#   "source_db": {
-#     "host": "cg68563.central-india.azure",
-#     "database-name": "demo",
-#     "username": "RIKESH08",
-#     "password": "Nomercy786@",
-#     "source-database-type": "snowflake"
-#   },
-#   "target_db": {
-#     "host": "localhost",
-#     "database-name": "Demo",
-#     "username": "postgres",
-#     "password": "1234",
-#     "target-database-type": "postgres"
-#   }
-# }
-# '''
-
-# process_database_data(data)

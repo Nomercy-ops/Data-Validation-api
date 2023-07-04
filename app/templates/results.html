@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!-- <!DOCTYPE html>
 <html lang="en">
 
 <head>
@@ -303,7 +303,329 @@
                 color: '#ff0000'
             }]
         });
+
+        
     </script>
+</body>
+
+</html> -->
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Validation Results Dashboard</title>
+    <script src="https://code.highcharts.com/highcharts.js"></script>
+    <script src="https://code.highcharts.com/modules/accessibility.js"></script>
+
+    <style>
+        /* CSS Styles */
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .charts-container {
+            display: flex;
+            justify-content: space-between;
+            flex-wrap: wrap;
+        }
+
+        .chart {
+            width: 48%;
+            margin-bottom: 20px;
+        }
+
+        .mismatched-data-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-top: 20px;
+        }
+
+        .mismatched-data-chart {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            font-family: Arial, sans-serif;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .mismatched-data-chart table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        .mismatched-data-chart th,
+        .mismatched-data-chart td {
+            padding: 8px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .mismatched-data-chart th {
+            background-color: #f2f2f2;
+            font-weight: bold;
+        }
+
+        .mismatched-data-bar-chart {
+            width: 48%;
+            height: 400px;
+        }
+
+        /* Header Styles */
+        nav {
+            margin-top: 10px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            text-align: center;
+            padding: 20px 0;
+            margin-bottom: 20px;
+        }
+
+        nav h1 {
+            color: black;
+            font-size: 36px;
+            font-weight: bold;
+            margin: 0;
+            flex-grow: 1;
+        }
+
+        /* Navigation Styles */
+        nav ul {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        nav ul li {
+            margin-left: 10px;
+        }
+
+        nav ul li:first-child {
+            margin-left: 0;
+        }
+
+        nav ul li a {
+            text-decoration: none;
+            color: #333;
+            padding: 5px;
+            font-size: 24px;
+            font-weight: bold;
+            transition: color 0.3s ease;
+        }
+
+        nav ul li a:hover {
+            color: green;
+            animation: glowEffect 1s infinite alternate;
+        }
+
+        /* Footer Styles */
+        footer {
+            color: black;
+            text-align: center;
+            padding: 20px;
+            margin-top: 20px;
+        }
+
+        footer p {
+            font-size: 16px;
+            margin-bottom: 10px;
+        }
+
+        /* Animations */
+        @keyframes glowEffect {
+            0% {
+                text-shadow: 0 0 5px #333;
+            }
+
+            100% {
+                text-shadow: 0 0 10px #333;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <nav>
+        <h1>Validation Results Dashboard</h1>
+        <ul>
+            <li><a href="/">Home</a></li>
+            <li><a href="/contact">Contact Me</a></li>
+        </ul>
+    </nav>
+
+
+    <div class="container">
+        <div class="charts-container">
+
+            <div class="chart" id="totalSourceRecordsChart"></div>
+            <div class="chart" id="totalTargetRecordsChart"></div>
+            <div class="chart" id="mismatchedColumnsChart"></div>
+            <div class="chart mismatched-data-bar-chart" id="processingTimeChart"></div>
+        </div>
+
+        <h3>Mismatched Data (First 10 Records)</h3>
+        <div class="mismatched-data-container">
+            <div id="mismatchedDataChart" class="mismatched-data-chart"></div>
+            <div id="mismatchedDataBarChart" class="mismatched-data-bar-chart"></div>
+        </div>
+    </div>
+
+    <script>
+        const results = JSON.parse(`{{ results | tojson | safe }}`);
+        const totalSourceRecords = results.total_source_records;
+        const totalTargetRecords = results.total_target_records;
+        const mismatchedColumns = results.mismatched_columns;
+        const mismatchedData = results.mismatched_data;
+        const total_time = results.processing_time;
+
+        // Chart for total source records
+        Highcharts.chart('totalSourceRecordsChart', {
+            chart: {
+                type: 'column'
+            },
+            title: {
+                text: 'Total Source Records'
+            },
+            xAxis: {
+                categories: ['Records']
+            },
+            yAxis: {
+                min: 0,
+                title: {
+                    text: 'Count'
+                }
+            },
+            series: [{
+                name: 'Source Records',
+                data: [totalSourceRecords],
+                color: '#0d47a1'
+            }]
+        });
+
+        // Chart for total target records
+        Highcharts.chart('totalTargetRecordsChart', {
+            chart: {
+                type: 'column'
+            },
+            title: {
+                text: 'Total Target Records'
+            },
+            xAxis: {
+                categories: ['Records']
+            },
+            yAxis: {
+                min: 0,
+                title: {
+                    text: 'Count'
+                }
+            },
+            series: [{
+                name: 'Target Records',
+                data: [totalTargetRecords],
+                color: '#4caf50'
+            }]
+        });
+
+        // Chart for mismatched columns
+        Highcharts.chart('mismatchedColumnsChart', {
+            chart: {
+                type: 'column'
+            },
+            title: {
+                text: 'Mismatched Columns'
+            },
+            xAxis: {
+                categories: [results.mismatched_columns]
+            },
+            yAxis: {
+                min: 0,
+                title: {
+                    text: 'Count'
+                }
+            },
+            series: [{
+                name: 'Mismatched Columns',
+                data: results.mismatched_columns ? (results.mismatched_columns.length >= 1 ? [results.mismatched_columns.filter(value => value !== "Na").length] : [0]) : [0],
+                color: '#ff0000'
+            }]
+        });
+
+
+        // Render mismatched data as a table
+        const mismatchedDataTable = document.createElement('table');
+        const mismatchedDataContainer = document.getElementById('mismatchedDataChart');
+        if (results.mismatched_data && results.mismatched_data.length > 0) {
+            const columns = Object.keys(results.mismatched_data[0]);
+
+            // Create table headers
+            const tableHeader = document.createElement('tr');
+            columns.forEach(column => {
+                const th = document.createElement('th');
+                th.textContent = column;
+                tableHeader.appendChild(th);
+            });
+            mismatchedDataTable.appendChild(tableHeader);
+
+            // Create table rows
+            results.mismatched_data.slice(0, 10).forEach(record => {
+                const tableRow = document.createElement('tr');
+                columns.forEach(column => {
+                    const td = document.createElement('td');
+                    td.textContent = record[column];
+                    tableRow.appendChild(td);
+                });
+                mismatchedDataTable.appendChild(tableRow);
+            });
+        } else {
+            const noDataMessage = document.createElement('p');
+            noDataMessage.textContent = 'No mismatched data available.';
+            mismatchedDataContainer.appendChild(noDataMessage);
+        }
+
+        mismatchedDataContainer.appendChild(mismatchedDataTable);
+
+
+        // Chart for processing time
+        Highcharts.chart('processingTimeChart', {
+            chart: {
+                type: 'bar'
+            },
+            title: {
+                text: 'Processing Time'
+            },
+            xAxis: {
+                categories: ['Time']
+            },
+            yAxis: {
+                min: 0,
+                title: {
+                    text: 'Time (ms)'
+                }
+            },
+            series: [{
+                name: 'Processing Time',
+                data: [total_time],  // Replace with the actual value from your backend
+                color: '#9c27b0'
+            }]
+        });
+
+    </script>
+    </div>
+
+    <footer>
+        <p>&copy; 2023 Validation Results Dashboard. All rights reserved.</p>
+    </footer>
 </body>
 
 </html>
