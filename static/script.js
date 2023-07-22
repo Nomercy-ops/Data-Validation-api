@@ -186,7 +186,7 @@ function initializeValidationForm() {
     startValidationButton.style.display = 'none';
     progressBarContainer.style.display = 'block';
   
-    const socket = new WebSocket('wss://0.0.0.0:10000/ws/progress');
+    const socket = new WebSocket('wss://data-validation.onrender.com/ws/progress');
   
     socket.onopen = () => {
       console.log('WebSocket connection established');
