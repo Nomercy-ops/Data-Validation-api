@@ -66,7 +66,8 @@ async def websocket_endpoint(websocket: WebSocket):
 
     except WebSocketDisconnect:
         # WebSocket connection closed, remove the WebSocket from the list
-        progress_sockets.remove(websocket)
+        if websocket in progress_sockets:  # Check if the WebSocket is in the list
+            progress_sockets.remove(websocket)
 
 async def close_websockets():
     """
