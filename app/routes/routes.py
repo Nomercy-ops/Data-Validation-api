@@ -26,13 +26,18 @@ TEMP_DIR_PATH = None
 # Progress callback function to send progress updates
 async def progress_callback(progress, elapsed_time):
     response = {"progress": progress, "elapsedTime": elapsed_time}
+    # Create a copy of the progress_sockets list to safely iterate
+    sockets_to_remove = []
     for progress_socket in progress_sockets:
         try:
             await progress_socket.send_json(response)
         except WebSocketDisconnect:
-            # WebSocket connection closed, remove the progress socket from the list
-            progress_sockets.remove(progress_socket)
+            # WebSocket connection closed, add to the list of sockets to remove
+            sockets_to_remove.append(progress_socket)
 
+    # Remove disconnected sockets after the loop
+    for socket in sockets_to_remove:
+        progress_sockets.remove(socket)
 
 @router.websocket("/ws/progress")
 async def websocket_endpoint(websocket: WebSocket):
@@ -45,7 +50,7 @@ async def websocket_endpoint(websocket: WebSocket):
             await websocket.receive_text()
 
     except WebSocketDisconnect:
-        # WebSocket connection closed, remove the progress socket from the list
+        # WebSocket connection closed, remove the WebSocket from the list
         progress_sockets.remove(websocket)
 
 async def close_websockets():
@@ -53,6 +58,7 @@ async def close_websockets():
     for progress_socket in progress_sockets:
         await progress_socket.close()
     progress_sockets.clear()
+
 
 
 async def show_results(request: Request, validation_results, total_time):
